@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NETA Level II — 200 Question Mock Exam</title>
+<style>
+body{font-family:Arial,sans-serif;margin:20px;color:#111}
+h1{font-size:1.4rem;margin-bottom:0}
+.question{border-bottom:1px solid #eee;padding:10px 0}
+.qtext{font-weight:600}
+label.option{display:block;margin:6px 0;cursor:pointer}
+.feedback{margin-top:6px;font-weight:700}
+.correct{color:green}
+.incorrect{color:red}
+button{padding:8px 12px;margin-top:12px;cursor:pointer}
+#score{margin:12px 0;font-weight:700;font-size:1.1rem}
+</style>
+</head>
+<body>
+<h1>NETA Level II — 200 Question Mock Exam</h1>
+<div id="score">Score: 0 / 200 | #Correct: 0 | #Incorrect: 0 | %Correction: 0%</div>
+<form id="examForm"></form>
+<button id="submit">Submit Exam</button>
+
+<script>
+const questions = [
+{q:"What does a DLRO measure?", A:"Transformer ratio", B:"Low resistance", C:"CT insulation", D:"Load current", ans:"B"},
+{q:"What is the purpose of primary injection testing?", A:"Verify relay scheme operation", B:"Measure winding resistance", C:"Measure insulation", D:"Test polarity", ans:"A"},
+{q:"A CT with the primary conductor passing through its window is which type?", A:"Bar-type", B:"Window-type", C:"Wound-type", D:"Split-core", ans:"B"},
+{q:"When must insulated tools be used?", A:"Outside the arc flash boundary", B:"Inside the restricted approach boundary", C:"Inside the limited boundary", D:"No requirement", ans:"B"},
+{q:"A network protector is normally rated:", A:"15 kV 600 A", B:"480/277 V", C:"216–600 V, 800–6200 A", D:"34.5 kV", ans:"C"},
+{q:"What current is used to test contact resistance of a circuit switcher?", A:"5 A", B:"10 A", C:"40 A", D:"100 A", ans:"C"},
+{q:"What are the 4 leads of a Kelvin connection?", A:"1 hot, 1 neutral, 2 ground", B:"2 current, 2 voltage", C:"4 voltage", D:"4 current", ans:"B"},
+{q:"When is a CT secondary shorted?", A:"During primary injection", B:"During TTR testing", C:"When disconnected from burden", D:"During megger testing", ans:"C"},
+{q:"What is a safe condition for a PT secondary?", A:"Open", B:"Shorted", C:"Grounded through resistor", D:"Energized", ans:"C"},
+{q:"What does relay element 50 represent?", A:"Instantaneous overcurrent", B:"Undervoltage", C:"Differential", D:"Time overcurrent", ans:"A"},
+{q:"Which test checks insulation aging?", A:"DLRO", B:"PI test", C:"TTR", D:"Contact timing", ans:"B"},
+{q:"A transformer TTR test compares:", A:"Impedance", B:"Turn ratio", C:"Excitation current", D:"Oil dielectric", ans:"B"},
+{q:"Oil dielectric strength is measured in:", A:"Ohms", B:"Ampere", C:"kV", D:"Percent", ans:"C"},
+{q:"What tool checks breaker open/close speed?", A:"Timer analyzer", B:"Megger", C:"Ductor", D:"TTR", ans:"A"},
+{q:"A vacuum bottle test checks:", A:"Vacuum integrity", B:"Coil resistance", C:"Spring tension", D:"Contact resistance", ans:"A"},
+{q:"A CT polarity mark is located at:", A:"X1", B:"H1", C:"C2", D:"S2", ans:"B"},
+{q:"SF6 is used for:", A:"Arc extinguishing", B:"Cooling", C:"Lubrication", D:"Voltage regulation", ans:"A"},
+{q:"What is the output of a PT secondary?", A:"120 V", B:"240 V", C:"480 V", D:"600 V", ans:"A"},
+{q:"A capacitor bank failure often shows:", A:"High IR", B:"High power factor", C:"Bulged cans", D:"Low load current", ans:"C"},
+{q:"What PPE is required inside the arc flash boundary?", A:"Safety glasses only", B:"Arc-rated PPE", C:"No PPE", D:"Hearing protection only", ans:"B"},
+{q:"A ground resistance test uses:", A:"Fall-of-potential", B:"DLRO", C:"TTR", D:"Megger", ans:"A"},
+{q:"Which fault is lowest magnitude?", A:"Line-to-line", B:"3-phase", C:"Line-to-ground", D:"Double-line-to-ground", ans:"C"},
+{q:"What does relay element 87 represent?", A:"Distance", B:"Differential", C:"Overcurrent", D:"Ground fault", ans:"B"},
+{q:"A PT polarity test uses:", A:"AC injection", B:"Addition method", C:"Continuity", D:"Megger only", ans:"B"},
+{q:"When performing a PI test, readings are taken at:", A:"1 and 10 seconds", B:"10 seconds and 1 minute", C:"1 and 10 minutes", D:"5 and 15 minutes", ans:"C"},
+{q:"A test indicating decreasing IR may show:", A:"Good insulation", B:"Wet insulation", C:"Correct polarity", D:"New equipment", ans:"B"},
+{q:"On a relay, the 'target' indicates:", A:"Temperature", B:"Trip operation", C:"Current level", D:"Voltage level", ans:"B"},
+{q:"A functional test checks:", A:"Relay logic to breaker", B:"CT ratio", C:"Insulation level", D:"Oil quality", ans:"A"},
+{q:"A differential relay compares:", A:"Power", B:"Voltage", C:"Current entering vs leaving", D:"Frequency", ans:"C"},
+{q:"Load loss in transformers is caused by:", A:"Moisture", B:"Copper losses", C:"Aging", D:"Cooling failure", ans:"B"},
+{q:"A split-core CT is used for:", A:"High accuracy", B:"Large currents", C:"Installation without disconnecting conductor", D:"High-voltage systems", ans:"C"},
+{q:"Torque on breaker terminals is checked with:", A:"Ratchet wrench", B:"Torque wrench", C:"Screwdriver", D:"Hammer", ans:"B"},
+{q:"What indicates a failed SF6 breaker?", A:"High moisture", B:"Low gas pressure", C:"High pressure", D:"No alarms", ans:"B"},
+{q:"During DLRO testing, higher resistance means:", A:"Good contacts", B:"Loose/eroded contacts", C:"Solid connections", D:"Proper lubrication", ans:"B"},
+{q:"What is the purpose of an induced voltage test?", A:"CT polarity", B:"Transformer insulation", C:"Relay accuracy", D:"Breaker timing", ans:"B"},
+{q:"A 480/277 V system is:", A:"Delta", B:"High-leg", C:"Wye", D:"Corner-grounded", ans:"C"},
+{q:"Purpose of breaker contact timing:", A:"Check CT ratio", B:"Verify mechanical operation", C:"Confirm relay wiring", D:"Confirm insulation", ans:"B"},
+{q:"A CT burden is measured in:", A:"VA", B:"Ohms", C:"Watts", D:"Amps", ans:"A"},
+{q:"Using too high burden on CT causes:", A:"More accuracy", B:"CT saturation", C:"Low output voltage", D:"Cooling issues", ans:"B"},
+{q:"Relay element 27 is:", A:"Undervoltage", B:"Overvoltage", C:"Differential", D:"Reverse power", ans:"A"},
+{q:"Which test is done BEFORE energizing a new transformer?", A:"Winding resistance", B:"Contact timing", C:"Trip coil test", D:"Current transformer test", ans:"A"},
+{q:"What identifies a failed capacitor?", A:"High capacitance", B:"Bulging", C:"High IR", D:"Good PF", ans:"B"},
+{q:"Oil moisture is measured by:", A:"Karl Fischer test", B:"TTR", C:"DLRO", D:"Hi-pot", ans:"A"},
+{q:"Breaker 'trip free' means:", A:"Cannot be reclosed manually", B:"Cannot be held closed during trip", C:"Will not trip under load", D:"Requires reset", ans:"B"},
+{q:"AC hi-pot test checks:", A:"Corona", B:"Insulation withstand", C:"Coil resistance", D:"Power factor", ans:"B"},
+{q:"Most common cable failure:", A:"Low capacitance", B:"Insulation breakdown", C:"High inductance", D:"High resistance", ans:"B"},
+{q:"Relay element 59 protects against:", A:"Overcurrent", B:"Overvoltage", C:"Ground fault", D:"Undervoltage", ans:"B"},
+{q:"A transformer tap changer adjusts:", A:"Frequency", B:"Voltage", C:"Insulation", D:"Power factor", ans:"B"},
+{q:"A motor surge test detects:", A:"Turn-to-turn shorts", B:"Ground faults", C:"Bearing failure", D:"Phase rotation", ans:"A"},
+{q:"Motor insulation is tested using a:", A:"DLRO", B:"TTR", C:"Megger", D:"Clamp meter", ans:"C"},
+{q:"Relay element 94 is:", A:"Tripping", B:"Restart delay", C:"Motor overload", D:"Bus differential", ans:"B"},
+{q:"What is x/r ratio?", A:"Inductive vs resistive reactance", B:"Voltage ratio", C:"Current ratio", D:"Power factor", ans:"A"},
+{q:"Cable aging is caused by:", A:"UV", B:"Moisture", C:"Heat", D:"All of the above", ans:"D"},
+{q:"What relay element detects overfrequency?", A:"81O", B:"27", C:"59", D:"50", ans:"A"},
+{q:"What test validates CT wiring?", A:"Primary injection", B:"IR", C:"Hipot", D:"PF test", ans:"A"},
+{q:"A breaker racking test ensures:", A:"Contact engagement", B:"Coil integrity", C:"Oil level", D:"CT polarity", ans:"A"},
+{q:"What measures motor current during start?", A:"Clamp meter", B:"DLRO", C:"TTR", D:"Multimeter", ans:"A"},
+{q:"What test finds turn-to-turn faults?", A:"Surge test", B:"IR", C:"PF", D:"Ratio test", ans:"A"},
+{q:"Capacitor banks improve:", A:"Voltage", B:"Frequency", C:"Power factor", D:"Resistance", ans:"C"},
+{q:"What does a phase angle meter measure?", A:"kW", B:"Current", C:"Degree difference", D:"Voltage", ans:"C"},
+{q:"A motor megged at 2 MΩ is:", A:"Good", B:"Borderline", C:"Bad", D:"Failed", ans:"B"},
+{q:"A transformer with 0% PF means:", A:"Poor insulation", B:"Good insulation", C:"Saturated", D:"Overloaded", ans:"B"},
+{q:"Breaker failure detection relay is:", A:"50", B:"51", C:"62BF", D:"27", ans:"C"},
+{q:"VLF testing uses:", A:"0.1 Hz", B:"60 Hz", C:"400 Hz", D:"DC", ans:"A"},
+{q:"What causes CT heating?", A:"Overload", B:"Underload", C:"Low burden", D:"Loose polarity", ans:"A"},
+{q:"Breaker lubrication should be checked:", A:"Every test interval", B:"Never", C:"Only after failure", D:"Only at commissioning", ans:"A"},
+{q:"A linear load draws:", A:"Harmonics", B:"No harmonics", C:"DC", D:"High reactive power", ans:"B"},
+{q:"A cable insulation failure is likely at:", A:"Mid-span", B:"Terminations", C:"Jacket", D:"Neutral", ans:"B"},
+{q:"Transformer impedance affects:", A:"Voltage drop", B:"IR", C:"Rotation", D:"Polarity", ans:"A"},
+{q:"Relay element 25 is:", A:"Synchronism check", B:"Overcurrent", C:"Breaker failure", D:"Differential", ans:"A"},
+{q:"Synchronizing lamps indicate:", A:"Polarity", B:"Frequency difference", C:"Voltage ratio", D:"PF", ans:"B"},
+{q:"A CT excitation test finds:", A:"Burden", B:"Knee point", C:"Winding resistance", D:"Polarity", ans:"B"},
+{q:"What causes breaker chatter?", A:"Low control voltage", B:"High control voltage", C:"High resistance", D:"CT error", ans:"A"},
+{q:"What detects loose bolted joints?", A:"IR test", B:"Thermal imaging", C:"TTR", D:"Surge test", ans:"B"},
+{q:"Tap changers adjust:", A:"Frequency", B:"Power factor", C:"Voltage", D:"Load", ans:"C"},
+{q:"Relay element 46 protects against:", A:"Reverse power", B:"Phase imbalance", C:"Differential", D:"Power factor", ans:"B"},
+{q:"Battery bank testing checks:", A:"Ah capacity", B:"Voltage ratio", C:"Current ratio", D:"Harmonics", ans:"A"},
+{q:"Battery cells in series increase:", A:"Voltage", B:"Current", C:"Frequency", D:"Temperature", ans:"A"},
+{q:"Ground grid corrosion increases:", A:"Resistance", B:"Voltage", C:"Current", D:"Capacitance", ans:"A"},
+{q:"DC control circuits use:", A:"Fuses", B:"Breakers", C:"Both", D:"None", ans:"C"},
+{q:"High resistance grounding reduces:", A:"Phase current", B:"Ground-fault current", C:"Voltage", D:"Frequency", ans:"B"},
+{q:"A ground fault on HRG system causes:", A:"Trip immediately", B:"Alarm only", C:"Shutdown", D:"No indication", ans:"B"},
+{q:"What test checks transformer core?", A:"Excitation", B:"Ratio", C:"IR", D:"DLRO", ans:"A"},
+{q:"SRP (schematic review procedure) verifies:", A:"Wiring correctness", B:"CT burden", C:"PF test", D:"Oil level", ans:"A"},
+{q:"Torque too low on breaker lugs causes:", A:"Good connection", B:"Loose connection", C:"High IR", D:"Low current", ans:"B"},
+{q:"Phase rotation A-B-C indicates:", A:"Forward", B:"Reverse", C:"Ground fault", D:"Overload", ans:"A"},
+{q:"What device absorbs switching transients?", A:"Surge arrester", B:"CT", C:"PT", D:"Breaker", ans:"A"},
+{q:"Surge arresters protect from:", A:"Voltage spikes", B:"Frequency mismatch", C:"Polarity", D:"PF drop", ans:"A"},
+{q:"A breaker contact worn-out shows:", A:"Low resistance", B:"High resistance", C:"Low torque", D:"High IR", ans:"B"},
+{q:"Relay element 79 is:", A:"Auto-reclose", B:"Neutral overcurrent", C:"Rotor fault", D:"Undervoltage", ans:"A"},
+{q:"A megger cannot test:", A:"CT insulation", B:"PT insulation", C:"Breaker contacts", D:"Cable insulation", ans:"C"},
+{q:"Transformer ratio differs from nameplate because:", A:"Temperature", B:"Tap position", C:"Core loss", D:"Aging", ans:"B"},
+{q:"A CT ratio test uses:", A:"Voltage injection", B:"Current injection", C:"Insulation test", D:"Hipot test", ans:"B"},
+{q:"Power factor correction reduces:", A:"Voltage", B:"Reactive power", C:"Frequency", D:"Load current", ans:"B"},
+{q:"Low PF means:", A:"High reactive power", B:"Low reactive power", C:"Balanced loads", D:"Low voltage", ans:"A"},
+{q:"CT secondary wiring continuity is checked using:", A:"DLRO", B:"Megger", C:"TTR", D:"Hipot", ans:"A"},
+{q:"What causes PT fuse blowing?", A:"Faulty PT", B:"Incorrect ratio", C:"High IR", D:"Low PF", ans:"A"},
+{q:"Transformer bushing failure often due to:", A:"Moisture", B:"High IR", C:"Low voltage", D:"Proper torque", ans:"A"},
+{q:"A TTR reading too high indicates:", A:"Shorted turns", B:"Open winding", C:"Good ratio", D:"Core saturation", ans:"B"},
+{q:"Cable sheath damage causes:", A:"High insulation leakage", B:"High capacitance", C:"High resistance", D:"Low harmonics", ans:"A"},
+  {q:"What device steps voltage down for relays/meters?", A:"CT", B:"PT", C:"Capacitor", D:"Breaker", ans:"B"},
+  {q:"A DC hipot is typically used for:", A:"Motors", B:"Transformers", C:"Cables", D:"Breakers", ans:"C"},
+  {q:"What type of fault causes highest current?", A:"Line-to-ground", B:"Line-to-line", C:"3-phase", D:"Double-line-ground", ans:"C"},
+  {q:"What meter measures harmonics?", A:"DLRO", B:"Power quality analyzer", C:"TTR", D:"Megger", ans:"B"},
+  {q:"Infrared testing detects:", A:"Hot spots", B:"Polarity", C:"Insulation moisture", D:"Turn ratio", ans:"A"},
+  {q:"Which breaker type uses no oil or gas?", A:"Vacuum", B:"OCB", C:"SF6", D:"Air-blast", ans:"A"},
+  {q:"A relay CT secondary is usually:", A:"1 A or 5 A", B:"10 A", C:"100 A", D:"50 A", ans:"A"},
+  {q:"What is cable tan delta testing for?", A:"Contact erosion", B:"Insulation aging", C:"Timing", D:"Ratio", ans:"B"},
+  {q:"What is the danger of open CT secondary?", A:"High voltage induced", B:"High current", C:"Breaker tripping", D:"Relay malfunction", ans:"A"},
+  {q:"Relay element 51 is:", A:"Instantaneous", B:"Time overcurrent", C:"Differential", D:"Undervoltage", ans:"B"},
+  {q:"When do you test breaker coil resistance?", A:"Before energization", B:"During operation", C:"After relay test", D:"Only after failure", ans:"A"},
+  {q:"What device isolates transformer oil from air?", A:"Conservator", B:"Radiator", C:"LTC", D:"Primary winding", ans:"A"},
+  {q:"Causes of CT saturation?", A:"Low burden", B:"High primary current", C:"Open PT", D:"Relay failure", ans:"B"},
+  {q:"Transformer inrush causes:", A:"High frequency", B:"High harmonic current", C:"Low impedance", D:"Overvoltage", ans:"B"},
+  {q:"What meter measures torque?", A:"Torque wrench", B:"DLRO", C:"Megger", D:"Clamp meter", ans:"A"},
+  {q:"Oil color darkens due to:", A:"Moisture", B:"Heat & aging", C:"High voltage", D:"Vibration", ans:"B"},
+  {q:"Relay element 67 is:", A:"Directional overcurrent", B:"Differential", C:"Distance", D:"Overvoltage", ans:"A"},
+  {q:"A noisy transformer is caused by:", A:"Loose laminations", B:"Bad CT", C:"CT saturation", D:"Oil leak", ans:"A"},
+  {q:"A cable hipot failure usually shows:", A:"Low leakage", B:"High leakage", C:"No current", D:"Pure sine wave", ans:"B"},
+  {q:"A failed PT often shows:", A:"Low voltage output", B:"High IR", C:"Perfect ratio", D:"High capacitance", ans:"A"},
+  {q:"Breaker slow closing time indicates:", A:"Weak closing spring", B:"Good lubrication", C:"Good mechanism", D:"Low resistance", ans:"A"},
+  {q:"Which relay detects reverse power?", A:"32", B:"87", C:"27", D:"59", ans:"A"},
+  {q:"CT test performed before ratio test:", A:"Saturation", B:"Polarity", C:"Burden", D:"IR", ans:"B"},
+  {q:"Cable shield continuity is checked using:", A:"DLRO", B:"Megger", C:"TTR", D:"Hipot", ans:"A"},
+  {q:"What indicates loose connection?", A:"Low IR", B:"High temperature", C:"Low voltage", D:"High torque", ans:"B"},
+  {q:"Relay element 81 is:", A:"Overcurrent", B:"Frequency", C:"Power factor", D:"Reverse power", ans:"B"},
+  {q:"Cold load pickup causes:", A:"Low inrush", B:"High inrush", C:"Low voltage", D:"PF drop", ans:"B"},
+  {q:"Transformer oil should be tested:", A:"Weekly", B:"Monthly", C:"Annually", D:"Never", ans:"C"},
+  {q:"What does a VFD output?", A:"Sine wave", B:"PWM waveform", C:"DC", D:"Pure AC", ans:"B"},
+  {q:"What identifies motor rotation?", A:"IR meter", B:"Phase rotation meter", C:"DLRO", D:"Megger", ans:"B"},
+  {q:"What test checks dryness of insulation?", A:"PI", B:"DLRO", C:"TTR", D:"Burden", ans:"A"},
+  {q:"What is x/r ratio?", A:"Inductive vs resistive reactance", B:"Voltage ratio", C:"Current ratio", D:"Power factor", ans:"A"},
+  {q:"Cable aging is caused by:", A:"UV", B:"Moisture", C:"Heat", D:"All of the above", ans:"D"},
+  {q:"What relay element detects overfrequency?", A:"81O", B:"27", C:"59", D:"50", ans:"A"},
+  {q:"What test validates CT wiring?", A:"Primary injection", B:"IR", C:"Hipot", D:"PF test", ans:"A"},
+  {q:"A breaker racking test ensures:", A:"Contact engagement", B:"Coil integrity", C:"Oil level", D:"CT polarity", ans:"A"},
+  {q:"What measures motor current during start?", A:"Clamp meter", B:"DLRO", C:"TTR", D:"Multimeter", ans:"A"},
+  {q:"What test finds turn-to-turn faults?", A:"Surge test", B:"IR", C:"PF", D:"Ratio test", ans:"A"},
+  {q:"Capacitor banks improve:", A:"Voltage", B:"Frequency", C:"Power factor", D:"Resistance", ans:"C"},
+  {q:"What does a phase angle meter measure?", A:"kW", B:"Current", C:"Degree difference", D:"Voltage", ans:"C"},
+  {q:"Breaker failure detection relay is:", A:"50", B:"51", C:"62BF", D:"27", ans:"C"},
+  {q:"VLF testing uses:", A:"0.1 Hz", B:"60 Hz", C:"400 Hz", D:"DC", ans:"A"},
+  {q:"What causes CT heating?", A:"Overload", B:"Underload", C:"Low burden", D:"Loose polarity", ans:"A"},
+  {q:"Breaker lubrication should be checked:", A:"Every test interval", B:"Never", C:"Only after failure", D:"Only at commissioning", ans:"A"},
+  {q:"A linear load draws:", A:"Harmonics", B:"No harmonics", C:"DC", D:"High reactive power", ans:"B"},
+  {q:"A cable insulation failure is likely at:", A:"Mid-span", B:"Terminations", C:"Jacket", D:"Neutral", ans:"B"},
+  {q:"Transformer impedance affects:", A:"Voltage drop", B:"IR", C:"Rotation", D:"Polarity", ans:"A"},
+  {q:"Relay element 25 is:", A:"Synchronism check", B:"Overcurrent", C:"Breaker failure", D:"Differential", ans:"A"},
+  {q:"Synchronizing lamps indicate:", A:"Polarity", B:"Frequency difference", C:"Voltage ratio", D:"PF", ans:"B"},
+  {q:"A CT excitation test finds:", A:"Burden", B:"Knee point", C:"Winding resistance", D:"Polarity", ans:"B"},
+  {q:"What causes breaker chatter?", A:"Low control voltage", B:"High control voltage", C:"High resistance", D:"CT error", ans:"A"},
+  {q:"What detects loose bolted joints?", A:"IR test", B:"Thermal imaging", C:"TTR", D:"Surge test", ans:"B"},
+  {q:"Tap changers adjust:", A:"Frequency", B:"Power factor", C:"Voltage", D:"Load", ans:"C"},
+  {q:"Battery bank testing checks:", A:"Ah capacity", B:"Voltage ratio", C:"Current ratio", D:"Harmonics", ans:"A"},
+  {q:"Battery cells in series increase:", A:"Voltage", B:"Current", C:"Frequency", D:"Temperature", ans:"A"},
+  {q:"Ground grid corrosion increases:", A:"Resistance", B:"Voltage", C:"Current", D:"Capacitance", ans:"A"},
+  {q:"DC control circuits use:", A:"Fuses", B:"Breakers", C:"Both", D:"None", ans:"C"},
+  {q:"High resistance grounding reduces:", A:"Phase current", B:"Ground-fault current", C:"Voltage", D:"Frequency", ans:"B"},
+  {q:"What test checks transformer core?", A:"Excitation", B:"Ratio", C:"IR", D:"DLRO", ans:"A"},
+  {q:"SRP (schematic review procedure) verifies:", A:"Wiring correctness", B:"CT burden", C:"PF test", D:"Oil level", ans:"A"},
+  {q:"Torque too low on breaker lugs causes:", A:"Good connection", B:"Loose connection", C:"High IR", D:"Low current", ans:"B"},
+  {q:"Phase rotation A-B-C indicates:", A:"Forward", B:"Reverse", C:"Ground fault", D:"Overload", ans:"A"},
+  {q:"What device absorbs switching transients?", A:"Surge arrester", B:"CT", C:"PT", D:"Breaker", ans:"A"},
+  {q:"Surge arresters protect from:", A:"Voltage spikes", B:"Frequency mismatch", C:"Polarity", D:"PF drop", ans:"A"},
+  {q:"A breaker contact worn-out shows:", A:"Low resistance", B:"High resistance", C:"Low torque", D:"High IR", ans:"B"},
+  {q:"Relay element 79 is:", A:"Auto-reclose", B:"Neutral overcurrent", C:"Rotor fault", D:"Undervoltage", ans:"A"},
+  {q:"A megger cannot test:", A:"CT insulation", B:"PT insulation", C:"Breaker contacts", D:"Cable insulation", ans:"C"},
+  {q:"Transformer ratio differs from nameplate because:", A:"Temperature", B:"Tap position", C:"Core loss", D:"Aging", ans:"B"},
+  {q:"A CT ratio test uses:", A:"Voltage injection", B:"Current injection", C:"Insulation test", D:"Hipot test", ans:"B"},
+  {q:"Power factor correction reduces:", A:"Voltage", B:"Reactive power", C:"Frequency", D:"Load current", ans:"B"},
+  {q:"Low PF means:", A:"High reactive power", B:"Low reactive power", C:"Balanced loads", D:"Low voltage", ans:"A"},
+  {q:"CT secondary wiring continuity is checked using:", A:"DLRO", B:"Megger", C:"TTR", D:"Hipot", ans:"A"},
+  {q:"What causes PT fuse blowing?", A:"Faulty PT", B:"Incorrect ratio", C:"High IR", D:"Low PF", ans:"A"},
+  {q:"Transformer bushing failure often due to:", A:"Moisture", B:"High IR", C:"Low voltage", D:"Proper torque", ans:"A"},
+  {q:"A TTR reading too high indicates:", A:"Shorted turns", B:"Open winding", C:"Good ratio", D:"Core saturation", ans:"B"},
+  {q:"Cable sheath damage causes:", A:"High insulation leakage", B:"High capacitance", C:"High resistance", D:"Low harmonics", ans:"A"},
+  {q:"Relay element 51G detects:", A:"Ground overcurrent", B:"Phase overcurrent", C:"Reverse power", D:"Overvoltage", ans:"A"},
+  {q:"Breaker control voltage too low causes:", A:"Fast close", B:"Slow operation", C:"Good timing", D:"Overtravel", ans:"B"},
+  {q:"Transformer oil level low indicates:", A:"Good operation", B:"Leak or breathing", C:"High IR", D:"Normal aging", ans:"B"},
+  {q:"CT shorting block is used for:", A:"PT testing", B:"Relay testing", C:"Safe CT disconnection", D:"IR testing", ans:"C"},
+  {q:"SF6 gas moisture causes:", A:"Arc failure", B:"Better insulation", C:"Good PF", D:"High ratio", ans:"A"},
+  {q:"Relay element 87T protects:", A:"Bus", B:"Transformer", C:"Motor", D:"Feeder", ans:"B"},
+  {q:"Relay element 32R protects:", A:"Reverse power", B:"Differential", C:"Undervoltage", D:"Overvoltage", ans:"A"},
+  {q:"What is LV side of transformer?", A:"Lower voltage", B:"Higher voltage", C:"Tap changer", D:"Ground", ans:"A"},
+  {q:"Breaker mechanical wear detected by:", A:"Timing test", B:"Megger test", C:"DLRO", D:"Ratio", ans:"A"},
+  {q:"Relay element 49 detects:", A:"Thermal overload", B:"Reverse power", C:"Overvoltage", D:"Undervoltage", ans:"A"},
+  {q:"Cable thumping is used for:", A:"Fault locating", B:"Polarity", C:"Ratio", D:"Winding", ans:"A"},
+  {q:"What is knee point in CT?", A:"Saturation point", B:"Zero crossing", C:"Polarity change", D:"Coil resistance", ans:"A"},
+  {q:"A CT with 200:5 ratio outputs 5 A at:", A:"100 A", B:"200 A", C:"50 A", D:"500 A", ans:"B"},
+  {q:"CT demagnetization is required after:", A:"Hipot", B:"Excitation test", C:"DLRO", D:"TTR", ans:"B"},
+  {q:"A transformer with no load noise increase indicates:", A:"Loose core", B:"High load", C:"Good winding", D:"Low PF", ans:"A"},
+  {q:"LTC contact wear is found using:", A:"Contact resistance", B:"IR test", C:"Ratio test", D:"Hipot", ans:"A"},
+  {q:"Capacitor banks must be discharged because:", A:"They store energy", B:"They saturate CT", C:"They lower PF", D:"They are DC devices", ans:"A"},
+  {q:"Relay element 27 protects against:", A:"Overvoltage", B:"Undervoltage", C:"Reverse power", D:"Phase unbalance", ans:"B"},
+
+];
+
+const form = document.getElementById('examForm');
+questions.forEach((q,i)=>{
+  const div = document.createElement('div');
+  div.className='question';
+  div.innerHTML = `<div class='qtext'>${i+1}. ${q.q}</div>
+  <label class='option'><input type='radio' name='q${i}' value='A'> A. ${q.A}</label>
+  <label class='option'><input type='radio' name='q${i}' value='B'> B. ${q.B}</label>
+  <label class='option'><input type='radio' name='q${i}' value='C'> C. ${q.C}</label>
+  <label class='option'><input type='radio' name='q${i}' value='D'> D. ${q.D}</label>
+  <div class='feedback' id='feedback-q${i}'></div>`;
+  form.appendChild(div);
+});
+
+document.getElementById('submit').addEventListener('click', function(e){
+  e.preventDefault();
+  let correct = 0;
+  let incorrect = 0;
+  
+  questions.forEach((q,i)=>{
+    const sel = document.querySelector(`input[name=q${i}]:checked`);
+    const feedbackDiv = document.getElementById(`feedback-q${i}`);
+    
+    if(sel){
+      if(sel.value === q.ans){
+        feedbackDiv.innerHTML = `<span class='correct'>✅ Correct</span>`;
+        correct++;
+      } else {
+        feedbackDiv.innerHTML = `<span class='incorrect'>❌ Incorrect</span> (Your: ${sel.value}, Correct: ${q.ans})`;
+        incorrect++;
+      }
+    } else {
+      feedbackDiv.innerHTML = `<span class='incorrect'>❌ No answer selected</span> (Correct: ${q.ans})`;
+      incorrect++;
+    }
+  });
+  
+  const percent = ((correct / questions.length) * 100).toFixed(2);
+  document.getElementById('score').innerHTML = `Score: ${correct} / ${questions.length} | # Correct: ${correct} | # Incorrect: ${incorrect} | Correct %: ${percent}%`;
+  window.scrollTo(0,document.body.scrollHeight);
+});
+</script>
+</body>
+</html>
