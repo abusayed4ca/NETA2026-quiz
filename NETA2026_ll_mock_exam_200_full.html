@@ -13,16 +13,15 @@ label.option{display:block;margin:6px 0;cursor:pointer}
 .feedback{margin-top:6px;font-weight:700}
 .correct{color:green}
 .incorrect{color:red}
-button{padding:8px 12px;margin-top:12px;cursor:pointer;margin-right:8px}
+button{padding:8px 12px;margin-top:12px;cursor:pointer}
 #score{margin:12px 0;font-weight:700;font-size:1.1rem}
 </style>
 </head>
 <body>
 <h1>NETA Level II — 200 Question Mock Exam</h1>
-<div id="score">Score: 0 / 200 | # Correct: 0 | # Incorrect: 0 | Correct %: 0%</div>
+<div id="score">Score: 0 / 200 | #Correct: 0 | #Incorrect: 0 | %Correction: 0%</div>
 <form id="examForm"></form>
 <button id="submit">Submit Exam</button>
-<button id="reset">Reset Exam</button>
 
 <script>
 const questions = [
@@ -217,12 +216,9 @@ const questions = [
 {q:"A TTR reading too high indicates:", A:"Shorted turns", B:"Open winding", C:"Good ratio", D:"Core saturation", ans:"A"},
 {q:"A linear load draws:", A:"Harmonics", B:"No harmonics", C:"DC", D:"High reactive power", ans:"B"},
 
-
-
 ];
 
 const form = document.getElementById('examForm');
-
 questions.forEach((q,i)=>{
   const div = document.createElement('div');
   div.className='question';
@@ -235,12 +231,15 @@ questions.forEach((q,i)=>{
   form.appendChild(div);
 });
 
-function gradeExam() {
+document.getElementById('submit').addEventListener('click', function(e){
+  e.preventDefault();
   let correct = 0;
   let incorrect = 0;
+  
   questions.forEach((q,i)=>{
     const sel = document.querySelector(`input[name=q${i}]:checked`);
     const feedbackDiv = document.getElementById(`feedback-q${i}`);
+    
     if(sel){
       if(sel.value === q.ans){
         feedbackDiv.innerHTML = `<span class='correct'>✅ Correct</span>`;
@@ -254,22 +253,10 @@ function gradeExam() {
       incorrect++;
     }
   });
+  
   const percent = ((correct / questions.length) * 100).toFixed(2);
   document.getElementById('score').innerHTML = `Score: ${correct} / ${questions.length} | # Correct: ${correct} | # Incorrect: ${incorrect} | Correct %: ${percent}%`;
-}
-
-document.getElementById('submit').addEventListener('click', (e)=>{
-  e.preventDefault();
-  gradeExam();
-});
-
-document.getElementById('reset').addEventListener('click', (e)=>{
-  e.preventDefault();
-  form.reset();
-  questions.forEach((_,i)=>{
-    document.getElementById(`feedback-q${i}`).innerHTML='';
-  });
-  document.getElementById('score').innerHTML = `Score: 0 / ${questions.length} | # Correct: 0 | # Incorrect: 0 | Correct %: 0%`;
+  window.scrollTo(0,document.body.scrollHeight);
 });
 </script>
 </body>

@@ -13,15 +13,19 @@ label.option{display:block;margin:6px 0;cursor:pointer}
 .feedback{margin-top:6px;font-weight:700}
 .correct{color:green}
 .incorrect{color:red}
-button{padding:8px 12px;margin-top:12px;cursor:pointer}
+button{padding:8px 12px;margin-top:12px;cursor:pointer;margin-right:8px}
 #score{margin:12px 0;font-weight:700;font-size:1.1rem}
 </style>
 </head>
 <body>
 <h1>NETA Level II — 200 Question Mock Exam</h1>
-<div id="score">Score: 0 / 200 | #Correct: 0 | #Incorrect: 0 | %Correction: 0%</div>
+<div id="score">Score: 0 / 50 | # Correct: 0 | # Incorrect: 0 | Correct %: 0%</div>
 <form id="examForm"></form>
-<button id="submit">Submit Exam</button>
+
+<button id="prev">Previous Section</button>
+<button id="next">Next Section</button>
+<button id="submit">Submit Section</button>
+<button id="reset">Reset Section</button>
 
 <script>
 const questions = [
@@ -215,31 +219,55 @@ const questions = [
 {q:"Breaker lubrication should be checked:", A:"Every test interval", B:"Never", C:"Only after failure", D:"Only at commissioning", ans:"A"},
 {q:"A TTR reading too high indicates:", A:"Shorted turns", B:"Open winding", C:"Good ratio", D:"Core saturation", ans:"A"},
 {q:"A linear load draws:", A:"Harmonics", B:"No harmonics", C:"DC", D:"High reactive power", ans:"B"},
-
+  {q:"What is the purpose of breaker anti-pumping feature?", A:"Prevent multiple trips", B:"Ensure single trip per operation", C:"Reduce contact wear", D:"Increase arc duration", ans:"B"},
+  {q:"A high insulation resistance reading indicates:", A:"Moisture problem", B:"Good insulation", C:"Shorted winding", D:"Open circuit", ans:"B"},
+  {q:"During a differential relay test, what indicates a correct operation?", A:"Trip only on unbalanced current", B:"Trip on any load", C:"Never trips", D:"Trips randomly", ans:"A"},
+  {q:"A CT knee-point voltage is important for:", A:"Relay saturation", B:"Breaker timing", C:"Transformer ratio", D:"Insulation test", ans:"A"},
+  {q:"The main purpose of a network protector is:", A:"Control voltage", B:"Prevent reverse power flow", C:"Increase transformer efficiency", D:"Reduce harmonics", ans:"B"},
+  {q:"A motor winding surge test primarily detects:", A:"Bearing faults", B:"Turn-to-turn shorts", C:"Shaft misalignment", D:"High starting current", ans:"B"},
+  {q:"What is the effect of loose breaker connections?", A:"Higher contact resistance", B:"Lower insulation resistance", C:"Correct operation", D:"No effect", ans:"A"},
+  {q:"During a CT secondary short circuit, what is the risk?", A:"Overheating", B:"Open-circuit voltage spike", C:"Reduced accuracy", D:"Trip failure", ans:"B"},
+  {q:"A voltage transformer secondary is usually rated for:", A:"120 V", B:"480 V", C:"600 V", D:"34.5 kV", ans:"A"},
+  {q:"Breaker trip coil testing ensures:", A:"Insulation integrity", B:"Mechanical operation of trip", C:"CT ratio accuracy", D:"Differential relay function", ans:"B"},  
 ];
 
-const form = document.getElementById('examForm');
-questions.forEach((q,i)=>{
-  const div = document.createElement('div');
-  div.className='question';
-  div.innerHTML = `<div class='qtext'>${i+1}. ${q.q}</div>
-  <label class='option'><input type='radio' name='q${i}' value='A'> A. ${q.A}</label>
-  <label class='option'><input type='radio' name='q${i}' value='B'> B. ${q.B}</label>
-  <label class='option'><input type='radio' name='q${i}' value='C'> C. ${q.C}</label>
-  <label class='option'><input type='radio' name='q${i}' value='D'> D. ${q.D}</label>
-  <div class='feedback' id='feedback-q${i}'></div>`;
-  form.appendChild(div);
-});
+// ======== Section Management ========
+const perSection = 50;
+let currentSection = 0;
 
-document.getElementById('submit').addEventListener('click', function(e){
-  e.preventDefault();
+function getQuestionsSection(sectionIndex) {
+  const start = sectionIndex * perSection;
+  const end = start + perSection;
+  return questions.slice(start, end);
+}
+
+const form = document.getElementById('examForm');
+
+function renderSection(sectionIndex) {
+  const sectionQuestions = getQuestionsSection(sectionIndex);
+  form.innerHTML = ''; // Clear previous section
+  sectionQuestions.forEach((q, i) => {
+    const div = document.createElement('div');
+    div.className = 'question';
+    div.innerHTML = `<div class='qtext'>${i+1}. ${q.q}</div>
+      <label class='option'><input type='radio' name='q${i}' value='A'> A. ${q.A}</label>
+      <label class='option'><input type='radio' name='q${i}' value='B'> B. ${q.B}</label>
+      <label class='option'><input type='radio' name='q${i}' value='C'> C. ${q.C}</label>
+      <label class='option'><input type='radio' name='q${i}' value='D'> D. ${q.D}</label>
+      <div class='feedback' id='feedback-q${i}'></div>`;
+    form.appendChild(div);
+  });
+  updateScoreDisplay(0,0,0);
+}
+
+// ======== Grading ========
+function gradeSection() {
+  const sectionQuestions = getQuestionsSection(currentSection);
   let correct = 0;
   let incorrect = 0;
-  
-  questions.forEach((q,i)=>{
+  sectionQuestions.forEach((q, i) => {
     const sel = document.querySelector(`input[name=q${i}]:checked`);
     const feedbackDiv = document.getElementById(`feedback-q${i}`);
-    
     if(sel){
       if(sel.value === q.ans){
         feedbackDiv.innerHTML = `<span class='correct'>✅ Correct</span>`;
@@ -253,11 +281,38 @@ document.getElementById('submit').addEventListener('click', function(e){
       incorrect++;
     }
   });
-  
-  const percent = ((correct / questions.length) * 100).toFixed(2);
-  document.getElementById('score').innerHTML = `Score: ${correct} / ${questions.length} | # Correct: ${correct} | # Incorrect: ${incorrect} | Correct %: ${percent}%`;
-  window.scrollTo(0,document.body.scrollHeight);
-});
+  const percent = ((correct / sectionQuestions.length) * 100).toFixed(2);
+  updateScoreDisplay(correct, incorrect, percent);
+}
+
+function updateScoreDisplay(correct, incorrect, percent){
+  document.getElementById('score').innerHTML =
+    `Score: ${correct + incorrect === 0 ? 0 : correct} / ${perSection} | # Correct: ${correct} | # Incorrect: ${incorrect} | Correct %: ${percent}%`;
+}
+
+// ======== Navigation ========
+document.getElementById('prev').onclick = () => {
+  if(currentSection > 0){
+    currentSection--;
+    renderSection(currentSection);
+  }
+};
+
+document.getElementById('next').onclick = () => {
+  if(currentSection < Math.ceil(questions.length / perSection) - 1){
+    currentSection++;
+    renderSection(currentSection);
+  }
+};
+
+document.getElementById('submit').onclick = gradeSection;
+
+document.getElementById('reset').onclick = () => {
+  renderSection(currentSection);
+};
+
+// ======== Initial render ========
+renderSection(currentSection);
 </script>
 </body>
 </html>
